@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerador de Simulados</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Gerador de Simulados para Professores</h1>
+
+    <input type="text" id="tema" placeholder="Tema do simulado" />
+
+    <div class="tipos">
+      <label><input type="radio" name="tipo" value="multipla" checked /> Múltipla Escolha</label>
+      <label><input type="radio" name="tipo" value="vf" /> Verdadeiro ou Falso</label>
+      <label><input type="radio" name="tipo" value="dissertativa" /> Dissertativa</label>
+      <label><input type="radio" name="tipo" value="misto" /> Misturado</label>
+    </div>
+
+    <input type="number" id="quantidade" min="1" max="20" placeholder="Quantidade de questões (máx 20)" />
+
+    <button onclick="gerarSimulado()">Gerar Simulado</button>
+
+    <pre id="resultado"></pre>
+  </div>
+
+  <script>
+    async function gerarSimulado() {
+      const tema = document.getElementById('tema').value;
+      const quantidade = document.getElementById('quantidade').value;
+      const tipo = document.querySelector('input[name="tipo"]:checked').value;
+
+      document.getElementById('resultado').textContent = 'Gerando simulado...';
+
+      const resposta = await fetch('http://localhost:3001/gerar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tema, quantidade, tipo })
+      });
+
+      const resultado = await resposta.json();
+      if (resultado.sucesso) {
+        document.getElementById('resultado').textContent = resultado.questoes;
+      } else {
+        document.getElementById('resultado').textContent = 'Erro ao gerar simulado.';
+      }
+    }
+  </script>
+</body>
+</html>
